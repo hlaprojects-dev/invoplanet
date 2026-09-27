@@ -1,0 +1,5 @@
+import type {Metadata} from "next";
+import {SITE} from "@/lib/site";
+import {ContactForm} from "@/components/site/ContactForm";
+export const metadata:Metadata={title:"Contact InvoPlanet",description:"Contact InvoPlanet about the free invoice maker, website issues or content questions."};
+export default function Contact(){return <main className="article-page legal"><span className="crumb">InvoPlanet / Contact</span><h1>Contact</h1><p className="intro">Questions, bug reports and suggestions are welcome. For support, bug reports and suggestions, use the email address below.</p><div className="info-box"><strong>Support email:</strong> {SITE.contactEmail}</div><div style={{marginTop:24}}><ContactForm/></div><h2>What to include</h2><ul><li>A short description of the issue or question.</li><li>Your browser and device if you are reporting a technical problem.</li><li>The page or feature where the problem occurred.</li></ul><p>Do not send passwords, payment-card details, government identity documents or other sensitive information through a general support channel.</p></main>}
