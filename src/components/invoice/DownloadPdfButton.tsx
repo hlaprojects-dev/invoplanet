@@ -8,6 +8,7 @@ import { Download, Loader2 } from "lucide-react";
 import { useInvoiceStore } from "@/store/useInvoiceStore";
 import { InvoicePdfDocument } from "./InvoicePdfDocument";
 import { t } from "@/lib/i18n";
+import { registerPdfFonts } from "@/lib/pdf-fonts";
 
 export function DownloadPdfButton() {
   const invoice = useInvoiceStore((s) => s.invoice);
@@ -18,6 +19,7 @@ export function DownloadPdfButton() {
     try {
       // Everything below runs entirely in the browser — the invoice data
       // and any uploaded logo never leave the client to produce this PDF.
+      registerPdfFonts();
       const blob = await pdf(<InvoicePdfDocument invoice={invoice} />).toBlob();
       const url = URL.createObjectURL(blob);
 

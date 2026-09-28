@@ -14,7 +14,7 @@ export function createEmptyInvoice(): Invoice {
     sender:{name:"",address:"",email:"",phone:""}, recipient:{name:"",address:"",email:"",phone:""},
     items:[newLineItem()], taxRate:0, taxLabel:"Tax", globalDiscount:{type:"percent",value:0}, notes:"",
     theme:{accentColor:"#1E3A8A",logoDataUrl:null},
-    labels:{invoice:"Invoice",from:"From",billTo:"Bill to",description:"Description",quantity:"Qty",rate:"Rate",amount:"Amount",subtotal:"Subtotal",discount:"Discount",tax:"Tax",total:"Total"},
+    labels:{invoice:"Invoice",from:"From",billTo:"Bill to",description:"Description",quantity:"Qty",rate:"Rate",commission:"Commission %",amount:"Amount",subtotal:"Subtotal",discount:"Discount",tax:"Tax",total:"Total"},
   };
 }
 
