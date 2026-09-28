@@ -1,18 +1,18 @@
-// components/invoice/DownloadPdfButton.tsx
 "use client";
 
 import { useState } from "react";
 import { pdf } from "@react-pdf/renderer";
-import { Button } from "@/components/ui/button";
 import { Download, Loader2 } from "lucide-react";
 import { useInvoiceStore } from "@/store/useInvoiceStore";
 import { InvoicePdfDocument } from "./InvoicePdfDocument";
 import { t } from "@/lib/i18n";
 import { registerPdfFonts } from "@/lib/pdf-fonts";
+import { readableOn, cn } from "@/lib/utils";
 
-export function DownloadPdfButton() {
+export function DownloadPdfButton({ className }: { className?: string }) {
   const invoice = useInvoiceStore((s) => s.invoice);
   const [isGenerating, setIsGenerating] = useState(false);
+  const accent = invoice.theme.accentColor;
 
   async function handleDownload() {
     setIsGenerating(true);
@@ -43,16 +43,18 @@ export function DownloadPdfButton() {
   const label = t(invoice.language, isGenerating ? "generating" : "download");
 
   return (
-    <Button onClick={handleDownload} disabled={isGenerating} className="w-full sm:w-auto">
-      {isGenerating ? (
-        <>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {label}
-        </>
-      ) : (
-        <>
-          <Download className="mr-2 h-4 w-4" /> {label}
-        </>
+    <button
+      type="button"
+      onClick={handleDownload}
+      disabled={isGenerating}
+      style={{ backgroundColor: accent, color: readableOn(accent) }}
+      className={cn(
+        "inline-flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm transition-opacity hover:opacity-90 disabled:pointer-events-none disabled:opacity-60 sm:w-auto",
+        className
       )}
-    </Button>
+    >
+      {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+      {label}
+    </button>
   );
 }

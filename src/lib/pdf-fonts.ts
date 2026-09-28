@@ -55,12 +55,13 @@ export function startMark(lang: string): (s: string) => string {
 export function withStartMarks(inv: Invoice): Invoice {
   if (inv.language !== "ur" && inv.language !== "ar") return inv;
   const m = startMark(inv.language);
-  const party = (p: Invoice["sender"]) => ({ ...p, name: m(p.name), address: m(p.address), email: m(p.email), phone: m(p.phone) });
+  const party = (p: Invoice["sender"]) => ({ ...p, name: m(p.name), contact: m(p.contact), address: m(p.address), email: m(p.email), phone: m(p.phone) });
   const l = inv.labels;
   const labels: Invoice["labels"] = {
     invoice: m(l.invoice), from: m(l.from), billTo: m(l.billTo), description: m(l.description),
     quantity: m(l.quantity), rate: m(l.rate), commission: m(l.commission), amount: m(l.amount),
-    subtotal: m(l.subtotal), discount: m(l.discount), tax: m(l.tax), total: m(l.total),
+    subtotal: m(l.subtotal), discount: m(l.discount), shipping: m(l.shipping), tax: m(l.tax), total: m(l.total),
+    amountPaid: m(l.amountPaid), balanceDue: m(l.balanceDue), notes: m(l.notes),
   };
   return {
     ...inv,

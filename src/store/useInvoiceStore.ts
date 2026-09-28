@@ -1,6 +1,8 @@
 "use client";
 import { create } from "zustand";
-import type { Discount, Invoice, LineItem, Party } from "@/types/invoice";
+import type { Discount, Invoice, InvoiceLabels, LineItem, Party } from "@/types/invoice";
+
+export const DEFAULT_LABELS: InvoiceLabels = {invoice:"Invoice",from:"From",billTo:"Bill to",description:"Description",quantity:"Qty",rate:"Rate",commission:"Commission %",amount:"Amount",subtotal:"Subtotal",discount:"Discount",shipping:"Shipping",tax:"Tax",total:"Total",amountPaid:"Amount paid",balanceDue:"Balance due",notes:"Notes"};
 
 function newLineItem(): LineItem {
   return { id: crypto.randomUUID(), description: "", quantity: 1, rate: 0, pricingType: "quantity", commissionRate: 0, discount: { type: "percent", value: 0 } };
@@ -11,10 +13,10 @@ function dueInDaysIso(days:number) { const d=new Date(); d.setDate(d.getDate()+d
 export function createEmptyInvoice(): Invoice {
   return {
     invoiceNumber:"INV-0001", issueDate:todayIso(), dueDate:dueInDaysIso(14), currency:"USD", language:"en",
-    sender:{name:"",address:"",email:"",phone:""}, recipient:{name:"",address:"",email:"",phone:""},
-    items:[newLineItem()], taxRate:0, taxLabel:"Tax", globalDiscount:{type:"percent",value:0}, notes:"",
-    theme:{accentColor:"#1E3A8A",logoDataUrl:null},
-    labels:{invoice:"Invoice",from:"From",billTo:"Bill to",description:"Description",quantity:"Qty",rate:"Rate",commission:"Commission %",amount:"Amount",subtotal:"Subtotal",discount:"Discount",tax:"Tax",total:"Total"},
+    sender:{name:"",contact:"",address:"",email:"",phone:""}, recipient:{name:"",contact:"",address:"",email:"",phone:""},
+    items:[newLineItem()], taxRate:0, taxLabel:"Tax", globalDiscount:{type:"percent",value:0}, shipping:0, amountPaid:0, showBalanceBox:true, notes:"",
+    theme:{accentColor:"#1E3A8A",logoDataUrl:null,logoRatio:null},
+    labels:{...DEFAULT_LABELS},
   };
 }
 
