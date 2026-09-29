@@ -25,7 +25,7 @@ const styles=StyleSheet.create({
  table:{marginTop:8},
  thead:{flexDirection:"row",borderRadius:3,paddingVertical:6,paddingHorizontal:6,marginBottom:4},
  row:{flexDirection:"row",borderBottomWidth:.5,borderBottomColor:"#f1f5f9",paddingVertical:6,paddingHorizontal:6},
- desc:{width:"46%"},qty:{width:"12%",textAlign:"right"},rate:{width:"20%",textAlign:"right"},comm:{width:"16%",textAlign:"right"},amount:{width:"22%",textAlign:"right"},
+ desc:{width:"46%"},qty:{width:"9%",textAlign:"right"},rate:{width:"18%",textAlign:"right"},comm:{width:"20%",textAlign:"right"},amount:{width:"22%",textAlign:"right"},
  totals:{marginTop:16,alignItems:"flex-end"},
  totalRow:{flexDirection:"row",justifyContent:"space-between",width:230,marginBottom:3},
  grand:{flexDirection:"row",justifyContent:"space-between",width:230,borderTopWidth:1,paddingTop:6,marginTop:6},
@@ -39,7 +39,7 @@ export function InvoicePdfDocument({invoice:source}:{invoice:Invoice}){
  const totals=calculateInvoiceTotals(invoice);
  const view=totalsView(invoice,totals);
  const hasCommission=invoice.items.some(i=>i.pricingType==="percentage");
- const w=hasCommission?{desc:"34%",qty:"8%",rate:"20%",comm:"16%",amount:"22%"}:{desc:"46%",qty:"12%",rate:"20%",comm:"0%",amount:"22%"};
+ const w=hasCommission?{desc:"30%",qty:"9%",rate:"18%",comm:"20%",amount:"22%"}:{desc:"46%",qty:"12%",rate:"20%",comm:"0%",amount:"22%"};
  const locale=localeFor(invoice.language);
  const x=(k:any)=>mk(t(invoice.language,k));
  const rtl=directionFor(invoice.language)==="rtl";
@@ -111,7 +111,7 @@ export function InvoicePdfDocument({invoice:source}:{invoice:Invoice}){
      <Text style={[styles.desc,{width:w.desc}]}>{item.description||"-"}</Text>
      <Text style={[styles.qty,{width:w.qty}]}>{item.quantity}</Text>
      <Text style={[styles.rate,{width:w.rate}]}>{money(item.pricingType==="percentage"?calculateLineBase(item):item.rate)}</Text>
-     {hasCommission&&<Text style={styles.comm}>{item.pricingType==="percentage"?`${item.commissionRate}%`:"-"}</Text>}
+     {hasCommission&&<Text style={[styles.comm,{paddingRight:6}]}>{item.pricingType==="percentage"?`${item.commissionRate}%`:<Text style={{color:"#64748b"}}>-</Text>}</Text>}
      <Text style={[styles.amount,{width:w.amount}]}>{money(totals.itemTotals[i])}</Text>
     </View>)}
    </View>

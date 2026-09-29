@@ -70,11 +70,11 @@ export function InvoicePreview(){
    <table className="mt-8 w-full table-fixed text-sm">
     <thead>
      <tr style={isClassic?{borderTop:`2px solid ${accent}`,borderBottom:`2px solid ${accent}`,color:accent}:{backgroundColor:accent,color:onAccent}}>
-      <th className={isClassic?"py-2 pl-1 text-left font-semibold":"rounded-l-md py-2 pl-3 text-left font-medium"} style={{width:hasCommission?"34%":"46%"}}>{invoice.labels.description}</th>
-      <th className={isClassic?"py-2 text-right font-semibold":"py-2 text-right font-medium"} style={{width:"12%"}}>{invoice.labels.quantity}</th>
-      <th className={isClassic?"py-2 text-right font-semibold":"py-2 text-right font-medium"} style={{width:"20%"}}>{invoice.labels.rate}</th>
-      {hasCommission&&<th className={isClassic?"py-2 text-right font-semibold":"py-2 text-right font-medium"} style={{width:"16%"}}>{invoice.labels.commission}</th>}
-      <th className={isClassic?"py-2 pr-1 text-right font-semibold":"rounded-r-md py-2 pr-3 text-right font-medium"} style={{width:hasCommission?"18%":"22%"}}>{invoice.labels.amount}</th>
+      <th className={isClassic?"py-2 pl-1 text-left font-semibold":"rounded-l-md py-2 pl-3 text-left font-medium"} style={{width:hasCommission?"30%":"46%"}}>{invoice.labels.description}</th>
+      <th className={(isClassic?"py-2 text-right font-semibold":"py-2 text-right font-medium")+" break-words text-xs leading-tight sm:text-sm"} style={{width:"9%"}}>{invoice.labels.quantity}</th>
+      <th className={(isClassic?"py-2 text-right font-semibold":"py-2 text-right font-medium")+" break-words text-xs leading-tight sm:text-sm"} style={{width:"16%"}}>{invoice.labels.rate}</th>
+      {hasCommission&&<th className={(isClassic?"py-2 text-right font-semibold":"py-2 text-right font-medium")+" break-words text-xs leading-tight sm:text-sm"} style={{width:"23%"}}>{invoice.labels.commission}</th>}
+      <th className={(isClassic?"py-2 pr-1 text-right font-semibold":"rounded-r-md py-2 pr-3 text-right font-medium")+" break-words text-xs leading-tight sm:text-sm"} style={{width:hasCommission?"22%":"22%"}}>{invoice.labels.amount}</th>
      </tr>
     </thead>
     <tbody>
@@ -82,7 +82,7 @@ export function InvoicePreview(){
       <td className={isClassic?"py-2 pl-1 break-words":"py-2 pl-3 break-words"}>{item.description||"—"}</td>
       <td className="py-2 text-right">{item.quantity}</td>
       <td className="py-2 text-right">{money(item.pricingType==="percentage"?calculateLineBase(item):item.rate)}</td>
-      {hasCommission&&<td className="py-2 text-right">{item.pricingType==="percentage"?`${item.commissionRate}%`:"-"}</td>}
+      {hasCommission&&<td className="py-2 pr-2 text-right">{item.pricingType==="percentage"?`${item.commissionRate}%`:<span className="text-slate-500">&ndash;</span>}</td>}
       <td className={isClassic?"py-2 pr-1 text-right":"py-2 pr-3 text-right"}>{money(totals.itemTotals[i])}</td>
      </tr>)}
     </tbody>
