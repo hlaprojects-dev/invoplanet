@@ -15,7 +15,7 @@ export function createEmptyInvoice(): Invoice {
     invoiceNumber:"INV-0001", issueDate:todayIso(), dueDate:dueInDaysIso(14), currency:"USD", language:"en",
     sender:{name:"",contact:"",address:"",email:"",phone:""}, recipient:{name:"",contact:"",address:"",email:"",phone:""},
     items:[newLineItem()], taxRate:0, taxLabel:"Tax", globalDiscount:{type:"percent",value:0}, shipping:0, amountPaid:0, showBalanceBox:true, notes:"",
-    theme:{accentColor:"#1E3A8A",logoDataUrl:null,logoRatio:null},
+    theme:{accentColor:"#1E3A8A",logoDataUrl:null,logoRatio:null,template:"standard"},
     labels:{...DEFAULT_LABELS},
   };
 }

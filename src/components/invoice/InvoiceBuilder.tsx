@@ -24,7 +24,7 @@ export function InvoiceBuilder(){
 
       <div className="mb-4 flex gap-2 sm:hidden"><Button size="sm" variant={tab==="edit"?"default":"outline"} onClick={()=>setTab("edit")}>{x("edit")}</Button><Button size="sm" variant={tab==="preview"?"default":"outline"} onClick={()=>setTab("preview")}>{x("preview")}</Button></div>
 
-      <div className="grid gap-6 lg:grid-cols-[65fr_35fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,65fr)_minmax(0,35fr)]">
         <div className={tab==="preview"?"hidden sm:block":""}><InvoiceForm/></div>
         <div className={tab==="edit"?"hidden sm:block":""}>
           <div className="lg:sticky lg:top-5">

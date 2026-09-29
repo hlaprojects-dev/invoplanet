@@ -12,6 +12,7 @@ const LABEL_KEYS=Object.keys(DEFAULT_LABELS) as (keyof typeof DEFAULT_LABELS)[];
 const card="rounded-2xl border bg-white p-5 shadow-sm";
 const selectCls="h-9 w-full rounded-md border bg-white px-3 text-sm";
 const num=(value:string)=>{const n=Number(value);return Number.isFinite(n)?Math.max(0,n):0};
+const TEMPLATES=[["standard","templateStandard"],["classic","templateClassic"],["premium","templatePremium"]] as const;
 
 // A number box that keeps what the user is typing (so "12." and "0.5" work) and
 // only sends the number to the invoice. Clicking it selects the whole value.
@@ -113,6 +114,13 @@ export function InvoiceForm(){
   </section>
 
   <details className="rounded-2xl border bg-white shadow-sm"><summary className="cursor-pointer list-none p-5 font-semibold">{x("customizeLabels")}</summary><div className="border-t p-5"><p className="mb-4 text-xs text-slate-500">{x("customizeHint")}</p><div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{LABEL_KEYS.map(k=><div key={k}><Label htmlFor={`lab-${k}`}>{(x as any)(k==="quantity"?"qty":k)}</Label><Input id={`lab-${k}`} value={invoice.labels[k]} onChange={e=>setLabels({[k]:e.target.value} as any)}/></div>)}</div><Button type="button" variant="ghost" size="sm" className="mt-4" onClick={()=>setLabels(DEFAULT_LABELS)}><RotateCcw className="mr-1 h-4 w-4"/>{x("resetLabels")}</Button></div></details>
+
+  <section className={card}>
+   <Label>{x("design")}</Label>
+   <div className="mt-2 inline-flex overflow-hidden rounded-md border text-sm" role="group">
+    {TEMPLATES.map(([id,labelKey])=><button key={id} type="button" aria-pressed={invoice.theme.template===id} onClick={()=>setTheme({template:id})} className={cn("px-4 py-1.5 transition-colors",invoice.theme.template===id?"bg-[#1e3a8a] text-white":"bg-white text-slate-600 hover:bg-slate-50")}>{x(labelKey)}</button>)}
+   </div>
+  </section>
 
   <section className={card}><div className="grid gap-5 sm:grid-cols-2">
    <div><Label>{x("logo")}</Label><input ref={fileRef} className="hidden" type="file" accept="image/png,image/jpeg,image/svg+xml" onChange={upload}/>

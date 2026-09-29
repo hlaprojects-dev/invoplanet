@@ -43,31 +43,46 @@ export function InvoicePdfDocument({invoice:source}:{invoice:Invoice}){
  const locale=localeFor(invoice.language);
  const x=(k:any)=>mk(t(invoice.language,k));
  const rtl=directionFor(invoice.language)==="rtl";
- const fam=pdfFontFor(invoice.language),fr:any=fam?{fontFamily:fam}:{},fb:any=fam?{fontFamily:fam,fontWeight:700}:{};
+ const tpl=invoice.theme.template;
+ const isClassic=tpl==="classic";
+ const isPremium=tpl==="premium";
+ // A custom font (for Urdu/Arabic/Russian) always wins. Otherwise, Classic uses the
+ // built-in Times-Roman serif; Standard/Premium use the built-in Helvetica.
+ const fam=pdfFontFor(invoice.language);
+ const serifFam=!fam&&isClassic?"Times-Roman":null;
+ const serifBoldFam=!fam&&isClassic?"Times-Bold":null;
+ const fr:any=fam?{fontFamily:fam}:serifFam?{fontFamily:serifFam}:{};
+ const fb:any=fam?{fontFamily:fam,fontWeight:700}:serifBoldFam?{fontFamily:serifBoldFam}:{};
  const align=rtl?"left":"right";
  const accent=invoice.theme.accentColor,onAccent=readableOn(accent);
  const money=(n:number)=>formatCurrency(n,invoice.currency,locale);
  const box=logoBox(invoice.theme.logoRatio);
+ const premCard={backgroundColor:"#f8fafc",borderRadius:8,padding:8};
 
  return <Document title={`${source.labels.invoice} ${source.invoiceNumber}`}>
   <Page size="A4" style={[styles.page,fr,{direction:rtl?"rtl":"ltr"} as any]}>
-   <View style={[styles.header,{borderBottomColor:accent}]}>
+
+   {isClassic&&<View style={{borderTopWidth:2,borderBottomWidth:2,borderColor:accent,paddingVertical:6,marginBottom:16,alignItems:"center"}}>
+    <Text style={[fb,{color:accent,fontSize:15,letterSpacing:4}]}>{invoice.labels.invoice}</Text>
+   </View>}
+
+   <View style={isPremium?[styles.header,fb,{backgroundColor:accent,marginHorizontal:-40,paddingHorizontal:40,paddingTop:24,borderBottomWidth:0}]:[styles.header,{borderBottomColor:accent}]}>
     <View>
-     {invoice.theme.logoDataUrl&&<Image src={invoice.theme.logoDataUrl} style={{...box,marginBottom:8}}/>}
-     <Text style={[styles.sender,fb]}>{invoice.sender.name||x("yourBusiness")}</Text>
-     {!!invoice.sender.contact&&<Text style={[styles.contact,fr]}>{invoice.sender.contact}</Text>}
-     <Text style={styles.muted}>{invoice.sender.address}</Text>
-     <Text style={styles.muted}>{invoice.sender.email}</Text>
-     {!!invoice.sender.phone&&<Text style={styles.muted}>{invoice.sender.phone}</Text>}
+     {invoice.theme.logoDataUrl&&<Image src={invoice.theme.logoDataUrl} style={{...box,marginBottom:8,backgroundColor:isPremium?"#ffffff":undefined,borderRadius:isPremium?4:0,padding:isPremium?3:0}}/>}
+     <Text style={[styles.sender,fb,isPremium?{color:onAccent}:{}]}>{invoice.sender.name||x("yourBusiness")}</Text>
+     {!!invoice.sender.contact&&<Text style={[styles.contact,fr,isPremium?{color:onAccent,opacity:0.85}:{}]}>{invoice.sender.contact}</Text>}
+     <Text style={[styles.muted,isPremium?{color:onAccent,opacity:0.85}:{}]}>{invoice.sender.address}</Text>
+     <Text style={[styles.muted,isPremium?{color:onAccent,opacity:0.85}:{}]}>{invoice.sender.email}</Text>
+     {!!invoice.sender.phone&&<Text style={[styles.muted,isPremium?{color:onAccent,opacity:0.85}:{}]}>{invoice.sender.phone}</Text>}
     </View>
     <View>
-     <Text style={[styles.title,fb,{color:accent,textAlign:align as any}]}>{invoice.labels.invoice}</Text>
-     <Text style={[styles.muted,{textAlign:align as any}]}>{invoice.invoiceNumber}</Text>
+     {!isClassic&&<Text style={[styles.title,fb,{color:isPremium?onAccent:accent,textAlign:align as any}]}>{invoice.labels.invoice}</Text>}
+     <Text style={[styles.muted,{textAlign:align as any},isPremium?{color:onAccent,opacity:0.85}:{}]}>{invoice.invoiceNumber}</Text>
     </View>
    </View>
 
-   <View style={styles.meta}>
-    <View>
+   <View style={[styles.meta,isPremium?{marginTop:16}:{}]}>
+    <View style={isPremium?[premCard,{maxWidth:260}]:{}}>
      <Text style={styles.label}>{invoice.labels.billTo}</Text>
      <Text style={[{fontFamily:"Helvetica-Bold"},fb]}>{invoice.recipient.name||x("clientName")}</Text>
      {!!invoice.recipient.contact&&<Text style={[styles.contact,fr]}>{invoice.recipient.contact}</Text>}
@@ -75,24 +90,24 @@ export function InvoicePdfDocument({invoice:source}:{invoice:Invoice}){
      <Text style={styles.muted}>{invoice.recipient.email}</Text>
      {!!invoice.recipient.phone&&<Text style={styles.muted}>{invoice.recipient.phone}</Text>}
     </View>
-    <View>
+    <View style={isPremium?[premCard]:{}}>
      <Text style={styles.muted}>{x("issueDate")}: {formatDate(invoice.issueDate,locale)}</Text>
      <Text style={styles.muted}>{x("dueDate")}: {formatDate(invoice.dueDate,locale)}</Text>
-     {invoice.showBalanceBox&&<View style={[styles.balanceBox,fb,{backgroundColor:accent,color:onAccent}]}>
-      <Text style={{color:onAccent,flexWrap:"nowrap"}} wrap={false}>{invoice.labels.balanceDue}</Text><Text style={{color:onAccent}}>{money(totals.balanceDue)}</Text>
-     </View>}
+     {invoice.showBalanceBox&&(isClassic
+      ?<View style={[styles.balanceBox,fb,{borderWidth:1.5,borderColor:accent}]}><Text style={{color:accent}}>{invoice.labels.balanceDue}</Text><Text style={{color:accent}}>{money(totals.balanceDue)}</Text></View>
+      :<View style={[styles.balanceBox,fb,{backgroundColor:accent}]}><Text style={{color:onAccent}} wrap={false}>{invoice.labels.balanceDue}</Text><Text style={{color:onAccent}}>{money(totals.balanceDue)}</Text></View>)}
     </View>
    </View>
 
    <View style={styles.table}>
-    <View style={[styles.thead,{backgroundColor:accent}]}>
-     <Text style={[styles.desc,{width:w.desc,color:onAccent}]}>{invoice.labels.description}</Text>
-     <Text style={[styles.qty,{width:w.qty,color:onAccent}]}>{invoice.labels.quantity}</Text>
-     <Text style={[styles.rate,{width:w.rate,color:onAccent}]}>{invoice.labels.rate}</Text>
-     {hasCommission&&<Text style={[styles.comm,{color:onAccent}]}>{invoice.labels.commission}</Text>}
-     <Text style={[styles.amount,{width:w.amount,color:onAccent}]}>{invoice.labels.amount}</Text>
+    <View style={isClassic?[styles.thead,{borderTopWidth:1.5,borderBottomWidth:1.5,borderTopColor:accent,borderBottomColor:accent,paddingHorizontal:2}]:[styles.thead,{backgroundColor:accent}]}>
+     <Text style={[styles.desc,{width:w.desc,color:isClassic?accent:onAccent}]}>{invoice.labels.description}</Text>
+     <Text style={[styles.qty,{width:w.qty,color:isClassic?accent:onAccent}]}>{invoice.labels.quantity}</Text>
+     <Text style={[styles.rate,{width:w.rate,color:isClassic?accent:onAccent}]}>{invoice.labels.rate}</Text>
+     {hasCommission&&<Text style={[styles.comm,{color:isClassic?accent:onAccent}]}>{invoice.labels.commission}</Text>}
+     <Text style={[styles.amount,{width:w.amount,color:isClassic?accent:onAccent}]}>{invoice.labels.amount}</Text>
     </View>
-    {invoice.items.map((item,i)=><View key={item.id} style={styles.row} wrap={false}>
+    {invoice.items.map((item,i)=><View key={item.id} style={[styles.row,isPremium&&i%2===1?{backgroundColor:"#f8fafc"}:{}]} wrap={false}>
      <Text style={[styles.desc,{width:w.desc}]}>{item.description||"-"}</Text>
      <Text style={[styles.qty,{width:w.qty}]}>{item.quantity}</Text>
      <Text style={[styles.rate,{width:w.rate}]}>{money(item.pricingType==="percentage"?calculateLineBase(item):item.rate)}</Text>
@@ -109,11 +124,13 @@ export function InvoicePdfDocument({invoice:source}:{invoice:Invoice}){
     <View style={[styles.grand,{borderTopColor:accent}]}><Text style={[styles.bold,fb]}>{view.totalLabel}</Text><Text style={[styles.bold,fb]}>{money(totals.grandTotal)}</Text></View>
     {view.hasPaid&&<>
      <View style={[styles.totalRow,{marginTop:3}]}><Text style={styles.muted}>{invoice.labels.amountPaid}</Text><Text>- {money(totals.paid)}</Text></View>
-     <View style={[styles.grand,{borderTopColor:accent}]}><Text style={[styles.bold,fb,{color:accent}]}>{invoice.labels.balanceDue}</Text><Text style={[styles.bold,fb,{color:accent}]}>{money(totals.balanceDue)}</Text></View>
+     {isPremium
+      ?<View style={{flexDirection:"row",justifyContent:"space-between",width:230,marginTop:6,backgroundColor:accent,borderRadius:6,paddingVertical:7,paddingHorizontal:10}}><Text style={[styles.bold,fb,{color:onAccent}]}>{invoice.labels.balanceDue}</Text><Text style={[styles.bold,fb,{color:onAccent}]}>{money(totals.balanceDue)}</Text></View>
+      :<View style={[styles.grand,{borderTopColor:accent}]}><Text style={[styles.bold,fb,{color:accent}]}>{invoice.labels.balanceDue}</Text><Text style={[styles.bold,fb,{color:accent}]}>{money(totals.balanceDue)}</Text></View>}
     </>}
    </View>
 
-   {!!invoice.notes&&<View style={styles.notes}>
+   {!!invoice.notes&&<View style={isPremium?[styles.notes,premCard,{marginTop:20,borderTopWidth:0,paddingTop:8}]:styles.notes}>
     <Text style={[styles.notesTitle,fb,{color:accent}]}>{invoice.labels.notes}</Text>
     <Text>{invoice.notes}</Text>
    </View>}
